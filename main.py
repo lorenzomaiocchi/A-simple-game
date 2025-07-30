@@ -3,6 +3,7 @@ from settings import Settings
 import sys
 
 from characters import Player
+from obstacles import Entity
 
 
 
@@ -17,12 +18,14 @@ class GAME:
         self.settings = Settings()
         self.screen = pygame.display.set_mode(self.settings.window_dimensions)
         pygame.display.set_caption('A simple game')
+
         
 
 
         #Characters
 
         self.Player = Player( x_pos= 100, y_pos= 200, sg_game= self)
+        self.Entity = Entity(self)
 
     
 
@@ -57,6 +60,7 @@ class GAME:
     def _update_screen(self):
         self.screen.fill(self.settings.background_color)
         self.Player.draw()
+        self.Entity.draw()
         pygame.display.flip()
          
 
