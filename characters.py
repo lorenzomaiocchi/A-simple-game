@@ -12,16 +12,23 @@ class Player:
         self.color = (0, 50 , 224)
         self.x_pos = x_pos
         self.y_pos = y_pos
+        self.jumping = False
+        self.gravity_y = 2
+        self.jump_vel = 25
+        self.JUMP_V = self.jump_vel
+        self.rect = pygame.Rect(self.x_pos, self.y_pos, 50, 50)
 
     def draw(self):
-        pygame.draw.rect(self.screen, self.color, [self.x_pos, self.y_pos, 50, 50] )
-    
+        self.rect.topleft = (self.x_pos, self.y_pos) 
+        pygame.draw.rect(self.screen, self.color, self.rect)
 
-    def move_right(self):
-        self.x_pos += 5
-
-    def move_left(self):
-        self.x_pos -= 5
-    
-    def jump(self):
-        pass
+    def start_jump(self):
+        if not self.jumping:
+            self.jumping = True 
+    def update_jump(self):
+        if self.jumping:
+            self.y_pos -= self.jump_vel * 1.5
+            self.jump_vel -= self.gravity_y 
+            if self.jump_vel < -self.JUMP_V:
+                self.jumping = False
+                self.jump_vel = self.JUMP_V
