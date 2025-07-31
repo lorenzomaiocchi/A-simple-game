@@ -1,111 +1,124 @@
 import pygame
-from settings import Settings, Background
 import sys
 import os
-import time
-
-from characters import Player
-from obstacles import Entity
+import random
 
 
 
+BGCOLOR = (250, 250, 250)
+
+WIDTH = 300
+HEIGHT = 600
+
+pygame.init()
+
+BG = pygame.image.load(os.path.join('Images\Other', 'Back.png'))
+BG = pygame.transform.scale(BG, (WIDTH, HEIGHT))
+
+
+class Player:
+    
+
+
+    def __init__(self, game_screen):
+        
+        self.screen = game_screen
+        self.color  = (250, 0, 0)
+        self.screen_rect = game_screen.get_rect()
+        self.pos_x = WIDTH//2
+        self.pos_y =    HEIGHT - 40
+
+        self.image = pygame.Rect(self.pos_x, self.pos_y, 10, 20)
+
+        self.velocity = 5
+
+    def draw(self):
+        
+        pygame.draw.rect(self.screen, self.color, self.image)
+
+    def update(self, UserInput):
+
+        if UserInput[pygame.K_a]:
+
+            self.image.x -= self.velocity
+        if UserInput[pygame.K_d]:
+
+            self.image.x += self.velocity
+        
+
+
+bg_x_pos = 0
+bg_y_pos = -250
 
 
 
-class GAME:
 
-    def __init__(self):
-        pygame.init()
-        self.clock  = pygame.time.Clock()
-        self.settings = Settings()
-        self.screen = pygame.display.set_mode(self.settings.window_dimensions)
-        pygame.display.set_caption('A simple game')
-        self.BG = Background(self)
+def game():
 
-        self.score = 0
-        self.font = pygame.font.SysFont(None, 30)
+
+    game_speed = 20
+
+
+
+    run = True
+    SCREEN = pygame.display.set_mode((WIDTH, HEIGHT))
+    ship = Player(SCREEN)
+
+    clock  = pygame.time.Clock()
+
+
+
+    def window():
+        global bg_x_pos, bg_y_pos
+
        
+        Image_H = BG.get_height()
+
+        SCREEN.blit(BG, (bg_x_pos, bg_y_pos))
+        SCREEN.blit(BG, (bg_x_pos, bg_y_pos + Image_H))
+        
+        if bg_y_pos <=  -Image_H:
+            SCREEN.blit(BG, (bg_x_pos, Image_H + bg_y_pos))
+            bg_y_pos = 0
+        
+        bg_y_pos -= game_speed
+
+
+
+
+        
         
 
-    
-
-        
-
-
-        #Characters
-
-        self.Player = Player( x_pos= 50, y_pos= 320, sg_game= self)
-        self.Entities = [Entity(self) for _ in range(2)]
-
-    
-
-
-    def run_game(self):
-
-        while True:
-            self._check_events()
-            self._update_screen()
-            self.clock.tick(30)
-
-            self.score += 1
-        
-
-            
-
-            
-
-    def _check_events(self):
+    while run:
         for event in pygame.event.get():
 
-                if event.type == pygame.QUIT:
-                    sys.exit()
-        
+    
 
+            if event.type == pygame.QUIT:
+                
+                sys.exit()
+        
         keys = pygame.key.get_pressed()
 
-        if keys[pygame.K_w] and not self.Player.jumping:
-            self.Player.start_jump()
-    
-    def _update_screen(self):
-        self.BG.drawBG()
-        self.Player.update_jump()
-        self.Player.draw()
-        self.text_score = self.font.render("Points: " + str(self.score), True, (0, 0, 0))
-        self.textRect = self.text_score.get_rect()
-        self.textRect.center = (650, 25 )
-        self.screen.blit(self.text_score, self.textRect)
-       
-       
-       
-        for entity in self.Entities:
-            entity.draw()
-            entity.update()
-            if self.Player.rect.colliderect(entity.rect):
-                self.Player.color = (250, 0, 0)
-                text = pygame.font.SysFont(None, 48)
 
-                game_over_text = text.render('Game Over', True, (0, 0, 0))
-                text_rect = game_over_text.get_rect(center=self.screen.get_rect().center)
-                self.screen.blit(game_over_text, text_rect)
-                self.score = 0
-
-
-
-
-            
-            
+        window()
+        ship.draw()
+        ship.update(keys)
+        
         pygame.display.flip()
-         
+        clock.tick(30)
+
+
+    
+
+
+    
 
 
 
 
+        
 
 
 
-
-
-if __name__ == '__main__':
-    sg = GAME()
-
-    sg.run_game()
+game()
